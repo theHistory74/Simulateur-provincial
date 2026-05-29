@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Assemblée nationale du Québec — Simulateur</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root{
+  --bg:#08101d;
+  --panel:#0d1728;
+  --panel2:#07111f;
+  --line:#1d2e4a;
+  --text:#e7edf7;
+  --muted:#6c82a3;
+  --muted2:#3f5577;
+  --qc-blue:#1456a0;
+  --qc-light:#5aa7ff;
+  --gold:#f0c85a;
+}
+body {
+  width: 100vw; height: 100vh; overflow: hidden;
+  background: radial-gradient(circle at 20% 0%, #0d2342 0%, #08101d 38%, #050913 100%);
+  color: var(--text);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  display: flex; flex-direction: column;
+}
+#hdr {
+  flex-shrink: 0; height: 58px;
+  display: flex; align-items: center; gap: 14px;
+  padding: 0 24px;
+  background: linear-gradient(90deg, #0b1930, #0d1728 55%, #07111f);
+  border-bottom: 1px solid var(--line);
+}
+#qc-mark {
+  width: 34px; height: 34px; border-radius: 8px;
+  display:flex; align-items:center; justify-content:center;
+  background:#104f96; color:white; font-size:22px; font-weight:800;
+  border:1px solid rgba(255,255,255,.18);
+  box-shadow: inset 0 0 0 2px rgba(255,255,255,.08);
+}
+#hdr h1 { font-size: 17px; font-weight: 800; letter-spacing: .2px; }
+#hdr p  { font-size: 10.5px; color: var(--muted); margin-top: 2px; }
+#hdr-badges { margin-left: auto; display: flex; gap: 22px; align-items: center; }
+.bdg { text-align: center; }
+.bdg-n { font-size: 23px; font-weight: 900; line-height: 1; }
+.bdg-l { font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: .7px; }
+#body {
+  flex: 1; min-height: 0;
+  display: grid; grid-template-columns: 1fr 1fr;
+}
+#left {
+  border-right: 1px solid var(--line);
+  padding: 16px 22px 12px;
+  display: flex; flex-direction: column;
+  overflow: hidden;
+  background: linear-gradient(180deg, rgba(20,86,160,.08), rgba(0,0,0,0));
+}
+.section-lbl {
+  font-size: 10px; font-weight: 800; color: #85a9d8;
+  letter-spacing: 1px; text-transform: uppercase;
+  margin-bottom: 14px;
+}
+#parti-rows {
+  flex: 1;
+  display: flex; flex-direction: column; justify-content: space-between;
+}
+.prow {
+  display: grid;
+  grid-template-columns: 10px 1fr 90px 50px;
+  align-items: center; gap: 10px;
+}
+.pdot { width: 10px; height: 10px; border-radius: 50%; box-shadow:0 0 0 2px rgba(255,255,255,.05); }
+.pname { font-size: 13px; font-weight: 800; line-height: 1.2; }
+.pnote { font-size: 10px; color: var(--muted); margin-top: 1px; }
+input[type=range] {
+  -webkit-appearance: none; appearance: none;
+  width: 100%; height: 5px; border-radius: 3px;
+  cursor: pointer; outline: none;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 15px; height: 15px; border-radius: 50%;
+  background: #d9e3f2; border: 2px solid #07111f; cursor: pointer;
+}
+input[type=range]::-moz-range-thumb {
+  width: 15px; height: 15px; border-radius: 50%;
+  background: #d9e3f2; border: 2px solid #07111f; cursor: pointer;
+}
+.pnum { font-size: 20px; font-weight: 900; line-height: 1; text-align: right; }
+.ppct { display: none; }
+#left-footer { margin-top: 12px; display: flex; flex-direction: column; gap: 6px; }
+#total-strip {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 7px 12px;
+  background: rgba(12,57,22,.6); border: 1px solid #1f6b32; border-radius: 8px;
+}
+#total-strip span { font-size: 11px; color: #5be182; font-weight: 700; }
+#total-strip strong { font-size: 13px; color: #5be182; }
+#notes { display: grid; grid-template-columns: 1fr 1fr; gap: 2px 8px; }
+.note { font-size: 10px; color: var(--muted); line-height: 1.5; }
+.note b { color: #a9c7ed; }
+#reset-btn {
+  padding: 6px 0; background: transparent;
+  border: 1px solid var(--line); border-radius: 8px;
+  color: var(--muted); font-size: 11px; cursor: pointer;
+  font-family: system-ui, sans-serif;
+}
+#reset-btn:hover { border-color: var(--qc-light); color: var(--text); }
+#right {
+  padding: 14px 16px 10px;
+  display: flex; flex-direction: column; gap: 7px;
+  overflow: hidden;
+}
+#share-bar {
+  display: flex; height: 18px; border-radius: 5px;
+  overflow: hidden; gap: 2px; flex-shrink: 0;
+  background:#07111f;
+}
+.seg {
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9px; font-weight: 800; color: #fff;
+  overflow: hidden; transition: flex .3s;
+  min-width: 0;
+}
+#chambre-wrap { flex: 1; min-height: 0; }
+#chambre-svg { width: 100%; height: 100%; display: block; }
+#result-box {
+  padding: 9px 14px; border-radius: 10px;
+  text-align: center; flex-shrink: 0;
+}
+#result-box.maj { background: rgba(6,31,12,.78); border: 1.5px solid #24793a; }
+#result-box.min { background: rgba(31,24,8,.78); border: 1.5px solid #7a5818; }
+#result-icon  { font-size: 18px; margin-bottom: 2px; }
+#result-title { font-size: 14px; font-weight: 800; margin-bottom: 3px; }
+#result-desc  { font-size: 11px; color: #88a1c5; line-height: 1.55; }
+#result-desc b { color: var(--text); }
+#legend { display: flex; flex-wrap: wrap; gap: 4px 12px; flex-shrink: 0; }
+.li { display: flex; align-items: center; gap: 4px; font-size: 11px; }
+.ldot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+#start-screen {
+  position: fixed; inset: 0; z-index: 999;
+  background: rgba(4, 9, 18, .96);
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+}
+#start-card {
+  width: min(580px, 100%);
+  background: linear-gradient(180deg, #0f1d34, #0b1424);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 18px 60px rgba(0,0,0,.45);
+}
+#start-card h2 { font-size: 20px; margin-bottom: 8px; color: var(--text); }
+#start-card p { font-size: 13px; line-height: 1.5; color: #8ca7cc; margin-bottom: 18px; }
+#party-name-form { display: grid; gap: 10px; }
+.name-row { display: grid; grid-template-columns: 12px 1fr; gap: 10px; align-items: center; }
+.name-row .dot { width: 12px; height: 12px; border-radius: 50%; }
+.name-row input {
+  width: 100%; background: #07111f; border: 1px solid var(--line); border-radius: 8px;
+  color: var(--text); padding: 10px 12px; font: 13px system-ui, sans-serif;
+}
+.name-row input:focus { outline: none; border-color: var(--qc-light); }
+#start-actions { display: flex; gap: 10px; margin-top: 18px; }
+#start-btn, #default-names-btn {
+  flex: 1; padding: 10px 12px; border-radius: 8px; font: 800 12px system-ui, sans-serif; cursor: pointer;
+}
+#start-btn { background: #1456a0; color: white; border: 1px solid #2b76c8; }
+#default-names-btn { background: transparent; color: #8ca7cc; border: 1px solid var(--line); }
+#default-names-btn:hover { color: var(--text); }
+@media (max-width: 900px){
+  body{height:auto; min-height:100vh; overflow:auto;}
+  #body{grid-template-columns:1fr;}
+  #left{border-right:none; border-bottom:1px solid var(--line); min-height:520px;}
+  #right{min-height:600px;}
+  #hdr{height:auto; min-height:58px; padding:10px 16px;}
+  #hdr-badges{gap:12px;}
+}
+</style>
+</head>
+<body>
+<div id="start-screen">
+  <div id="start-card">
+    <h2>Nommer les partis</h2>
+    <p>Le simulateur s’ouvre avec les vrais noms des partis représentés ou présents dans l’élection québécoise de 2022. Tu peux les conserver ou les remplacer par des noms fictifs.</p>
+    <div id="party-name-form"></div>
+    <div id="start-actions">
+      <button id="default-names-btn" type="button">Réinitialiser les noms</button>
+      <button id="start-btn" type="button">Commencer la simulation</button>
+    </div>
+  </div>
+</div>
+<div id="hdr">
+  <div id="qc-mark">⚜</div>
+  <div>
+    <h1>Assemblée nationale du Québec — Simulateur</h1>
+    <p>Glisse un curseur → les autres s'ajustent proportionnellement &nbsp;·&nbsp; Élection du 3 octobre 2022 &nbsp;·&nbsp; 125 sièges</p>
+  </div>
+  <div id="hdr-badges">
+    <div class="bdg"><div class="bdg-n" id="hdr-total">125</div><div class="bdg-l">sièges / 125</div></div>
+    <div class="bdg"><div class="bdg-n" style="color:#f0c85a">63</div><div class="bdg-l">= majorité</div></div>
+  </div>
+</div>
+<div id="body">
+  <div id="left">
+    <div class="section-lbl">🎛️ Attribution des sièges</div>
+    <div id="parti-rows"></div>
+    <div id="left-footer">
+      <div id="total-strip"><span>✅ Total = 125 sièges</span><strong>125 / 125</strong></div>
+      <div id="notes">
+        <div class="note">💡 <b>125 sièges</b> = 125 circonscriptions</div>
+        <div class="note">💡 <b>63 sièges</b> = majorité absolue</div>
+        <div class="note">💡 <b>1 circonscription</b> = 1 député élu</div>
+        <div class="note">💡 Le chef du parti gagnant devient généralement <b>premier ministre</b></div>
+      </div>
+      <button id="reset-btn">↺ Réinitialiser — résultats du 3 octobre 2022</button>
+    </div>
+  </div>
+  <div id="right">
+    <div class="section-lbl">🏛️ L’Assemblée nationale — Vue du dessus</div>
+    <div id="share-bar"></div>
+    <div id="chambre-wrap">
+      <svg id="chambre-svg" viewBox="0 0 700 410" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="room" x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0%" stop-color="#0a1b32"/>
+            <stop offset="100%" stop-color="#06101d"/>
+          </linearGradient>
+        </defs>
+        <rect x="0" y="0" width="700" height="410" rx="12" fill="url(#room)" stroke="#1d2e4a" stroke-width="1.5"/>
+        <rect x="262" y="4" width="176" height="28" rx="7" fill="#0f2d50" stroke="#2b76c8" stroke-width="1"/>
+        <text x="350" y="22" text-anchor="middle" fill="#9fc9ff" font-size="10" font-weight="800">⚜  PRÉSIDENTE OU PRÉSIDENT</text>
+        <rect x="328" y="34" width="44" height="356" rx="4" fill="#040b14"/>
+        <text x="350" y="214" text-anchor="middle" fill="#10213a" font-size="8" transform="rotate(-90,350,214)" letter-spacing="2">— ALLÉE CENTRALE —</text>
+        <path d="M70,60 C130,35 240,40 318,52" fill="none" stroke="#14365e" stroke-width="1" opacity=".8"/>
+        <path d="M630,60 C570,35 460,40 382,52" fill="none" stroke="#14365e" stroke-width="1" opacity=".8"/>
+        <g id="seats-left"></g>
+        <g id="seats-right"></g>
+        <rect x="309" y="178" width="82" height="56" rx="8" fill="#081524" stroke="#1d2e4a" stroke-width="1"/>
+        <text id="cpt-num" x="350" y="208" text-anchor="middle" font-size="28" font-weight="900">—</text>
+        <text id="cpt-name" x="350" y="224" text-anchor="middle" fill="#5c7397" font-size="9"> </text>
+        <text id="lbl-gov" x="155" y="402" text-anchor="middle" font-size="12" font-weight="800"> </text>
+        <text x="544" y="402" text-anchor="middle" fill="#5c7397" font-size="12" font-weight="800">OPPOSITION</text>
+      </svg>
+    </div>
+    <div id="result-box" class="min">
+      <div id="result-icon">🏛️</div>
+      <div id="result-title">—</div>
+      <div id="result-desc">Glisse un curseur pour voir le résultat.</div>
+    </div>
+    <div id="legend"></div>
+  </div>
+</div>
+<script>
+const TOTAL = 125, MAJ = 63;
+const PARTIES = [
+  { id:"caq", color:"#2f6bb2", label:"Coalition avenir Québec", note:"Gouvernement en 2022", max:125 },
+  { id:"plq", color:"#d83030", label:"Parti libéral du Québec", note:"Opposition officielle en 2022", max:125 },
+  { id:"qs", color:"#f08424", label:"Québec solidaire", note:"Groupe parlementaire", max:125 },
+  { id:"pq", color:"#1d9bd1", label:"Parti québécois", note:"Groupe parlementaire", max:125 },
+  { id:"pcq", color:"#243f88", label:"Parti conservateur du Québec", note:"0 siège en 2022", max:125 },
+  { id:"ind", color:"#8a8f98", label:"Indépendants", note:"Sans affiliation", max:125 }
+];
+const DEFAULTS = { caq:90, plq:21, qs:11, pq:3, pcq:0, ind:0 };
+let V = {...DEFAULTS};
+let busy = false;
+const DEFAULT_LABELS = Object.fromEntries(PARTIES.map(p => [p.id, p.label]));
+const nameForm = document.getElementById("party-name-form");
+function buildNameForm() {
+  nameForm.innerHTML = "";
+  PARTIES.forEach(p => {
+    const row = document.createElement("div");
+    row.className = "name-row";
+    row.innerHTML = `<div class="dot" style="background:${p.color}"></div><input id="name-${p.id}" value="${p.label}" aria-label="Nom du parti ${p.label}">`;
+    nameForm.appendChild(row);
+  });
+}
+function applyPartyNames() {
+  PARTIES.forEach(p => {
+    const input = document.getElementById("name-" + p.id);
+    const val = input.value.trim();
+    p.label = val || DEFAULT_LABELS[p.id];
+  });
+}
+buildNameForm();
+document.getElementById("default-names-btn").addEventListener("click", () => {
+  PARTIES.forEach(p => { document.getElementById("name-" + p.id).value = DEFAULT_LABELS[p.id]; });
+});
+document.getElementById("start-btn").addEventListener("click", () => {
+  applyPartyNames();
+  document.getElementById("start-screen").style.display = "none";
+  buildPartyRows();
+  render();
+});
+const sliders = {}, numEls = {}, pctEls = {};
+const rowsDiv = document.getElementById("parti-rows");
+function buildPartyRows() {
+  rowsDiv.innerHTML = "";
+  PARTIES.forEach(p => {
+    const row = document.createElement("div");
+    row.className = "prow";
+    row.innerHTML = `
+      <div class="pdot" style="background:${p.color}"></div>
+      <div><div class="pname" style="color:${p.color}">${p.label}</div><div class="pnote">${p.note}</div></div>
+      <input type="range" id="sl-${p.id}" min="0" max="${p.max}" value="${V[p.id]}">
+      <div><div class="pnum" id="n-${p.id}" style="color:${p.color}">${V[p.id]}</div><div class="ppct" id="p-${p.id}"></div></div>`;
+    rowsDiv.appendChild(row);
+    sliders[p.id] = document.getElementById("sl-"+p.id);
+    numEls[p.id] = document.getElementById("n-"+p.id);
+    pctEls[p.id] = document.getElementById("p-"+p.id);
+    sliders[p.id].addEventListener("input", e => { redist(p.id, +e.target.value); });
+  });
+}
+function redist(changedId, newVal) {
+  if (busy) return;
+  busy = true;
+  const delta = newVal - V[changedId];
+  V[changedId] = newVal;
+  const others = PARTIES.map(p=>p.id).filter(id=>id!==changedId);
+  const pool = others.reduce((s,id)=>s+V[id], 0);
+  if (delta !== 0 && pool > 0) {
+    const need = -delta;
+    let applied = 0;
+    const r = {};
+    others.forEach(id => { r[id]=Math.round(need*(V[id]/pool)); applied+=r[id]; });
+    const corr = need - applied;
+    if (corr) {
+      const candidates = others.filter(id=>V[id]+r[id]+corr>=0);
+      const big = (candidates.length?candidates:others).sort((a,b)=>V[b]-V[a])[0];
+      if (big) r[big] += corr;
+    }
+    others.forEach(id => { V[id] = Math.max(0, V[id]+r[id]); });
+  } else if (delta !== 0 && pool === 0) {
+    V[changedId] = newVal - delta;
+  }
+  let sum = Object.values(V).reduce((a,b)=>a+b,0);
+  if (sum !== TOTAL) {
+    const ordered = PARTIES.map(p=>p.id).filter(id=>id!==changedId).sort((a,b)=>V[b]-V[a]);
+    const target = ordered[0] || changedId;
+    V[target] = Math.max(0, V[target]+(TOTAL-sum));
+  }
+  // Correction finale si un arrondi a laissé un écart
+  sum = Object.values(V).reduce((a,b)=>a+b,0);
+  if (sum !== TOTAL) V[changedId] = Math.max(0, V[changedId] + (TOTAL-sum));
+  PARTIES.forEach(p => sliders[p.id].value = V[p.id]);
+  busy = false;
+  render();
+}
+const DOT=7, STEP=10, Y0=48, Y1=372;
+const ROWS = Math.floor((Y1-Y0)/STEP);
+const COLS = Math.floor(300/STEP);
+const SVG_NS = "http://www.w3.org/2000/svg";
+function drawSeats() {
+  const top = PARTIES.reduce((a,b)=>V[a.id]>=V[b.id]?a:b);
+  const others = PARTIES.filter(p=>p.id!==top.id).sort((a,b)=>V[b.id]-V[a.id]);
+  const leftG = document.getElementById("seats-left");
+  leftG.innerHTML = "";
+  let i=0;
+  const lc = Array(V[top.id]).fill(top.color);
+  outer1: for(let c=0;c<COLS;c++){
+    for(let r=0;r<ROWS;r++){
+      if(i>=lc.length) break outer1;
+      const rect = document.createElementNS(SVG_NS,"rect");
+      rect.setAttribute("x", (320 - c*STEP - DOT/2).toFixed(1));
+      rect.setAttribute("y", (Y0 + r*STEP - DOT/2).toFixed(1));
+      rect.setAttribute("width", DOT); rect.setAttribute("height", DOT); rect.setAttribute("rx", "2");
+      rect.setAttribute("fill", lc[i]); rect.setAttribute("opacity","0.94");
+      leftG.appendChild(rect); i++;
+    }
+  }
+  const rightG = document.getElementById("seats-right");
+  rightG.innerHTML = "";
+  const rc = [];
+  others.forEach(p => { for(let k=0;k<V[p.id];k++) rc.push(p.color); });
+  let j=0;
+  outer2: for(let c=0;c<COLS;c++){
+    for(let r=0;r<ROWS;r++){
+      if(j>=rc.length) break outer2;
+      const rect = document.createElementNS(SVG_NS,"rect");
+      rect.setAttribute("x", (380 + c*STEP - DOT/2).toFixed(1));
+      rect.setAttribute("y", (Y0 + r*STEP - DOT/2).toFixed(1));
+      rect.setAttribute("width", DOT); rect.setAttribute("height", DOT); rect.setAttribute("rx", "2");
+      rect.setAttribute("fill", rc[j]); rect.setAttribute("opacity","0.94");
+      rightG.appendChild(rect); j++;
+    }
+  }
+  document.getElementById("cpt-num").textContent = V[top.id];
+  document.getElementById("cpt-num").setAttribute("fill", top.color);
+  document.getElementById("cpt-name").textContent = top.label;
+  document.getElementById("lbl-gov").textContent = top.label.toUpperCase()+" — "+V[top.id];
+  document.getElementById("lbl-gov").setAttribute("fill", top.color);
+}
+function drawBar() {
+  const top = PARTIES.reduce((a,b)=>V[a.id]>=V[b.id]?a:b);
+  const others = PARTIES.filter(p=>p.id!==top.id).sort((a,b)=>V[b.id]-V[a.id]);
+  const bar = document.getElementById("share-bar");
+  bar.innerHTML = "";
+  [top,...others].forEach(p => {
+    if (!V[p.id]) return;
+    const seg = document.createElement("div");
+    seg.className = "seg";
+    seg.style.flex = V[p.id];
+    seg.style.background = p.color;
+    if (V[p.id]/TOTAL > 0.05) seg.textContent = V[p.id];
+    bar.appendChild(seg);
+  });
+}
+function drawResult() {
+  const top = PARTIES.reduce((a,b)=>V[a.id]>=V[b.id]?a:b);
+  const topN = V[top.id];
+  const isMaj = topN >= MAJ;
+  const box = document.getElementById("result-box");
+  box.className = isMaj ? "maj" : "min";
+  document.getElementById("result-icon").textContent = isMaj ? "🏆" : "⚠️";
+  document.getElementById("result-title").textContent = "Gouvernement " + (isMaj ? "MAJORITAIRE" : "MINORITAIRE");
+  document.getElementById("result-title").style.color = isMaj ? top.color : "#d5a530";
+  let desc = "";
+  if (isMaj) {
+    desc = `<b style="color:${top.color}">${top.label}</b> obtient <b>${topN} sièges</b>. Il peut gouverner <b>seul</b> et faire adopter ses lois plus facilement. Le chef de ce parti devient généralement <b>premier ministre du Québec</b>.`;
+  } else {
+    const others = PARTIES.filter(p=>p.id!==top.id&&V[p.id]>0).sort((a,b)=>V[b.id]-V[a.id]);
+    let cumul=topN, alliesTxt="";
+    for(const o of others){
+      if(cumul>=MAJ) break;
+      alliesTxt += (alliesTxt?", ":"")+`<span style="color:${o.color}">${o.label} (${V[o.id]})</span>`;
+      cumul += V[o.id];
+    }
+    desc = `<b style="color:${top.color}">${top.label}</b> — <b>${topN} sièges</b> — doit <b>négocier</b> avec d'autres partis pour gouverner.${alliesTxt?" Appuis possibles : "+alliesTxt+".":""} Vote de confiance perdu → <b>nouvelles élections</b>.`;
+  }
+  document.getElementById("result-desc").innerHTML = desc;
+}
+function drawLegend() {
+  const top = PARTIES.reduce((a,b)=>V[a.id]>=V[b.id]?a:b);
+  const others = PARTIES.filter(p=>p.id!==top.id).sort((a,b)=>V[b.id]-V[a.id]);
+  const leg = document.getElementById("legend");
+  leg.innerHTML = "";
+  [top,...others].filter(p=>V[p.id]>0).forEach(p => {
+    const it = document.createElement("div");
+    it.className = "li";
+    it.innerHTML = `<div class="ldot" style="background:${p.color}"></div><span style="color:${p.color};font-weight:700">${p.label}</span><span style="color:#6c82a3">${V[p.id]} sièges</span>`;
+    leg.appendChild(it);
+  });
+}
+function updateSliders() {
+  PARTIES.forEach(p => {
+    const v = V[p.id];
+    const pct = (v/p.max*100).toFixed(1)+"%";
+    sliders[p.id].style.background = `linear-gradient(to right,${p.color} ${pct},#1d2e4a ${pct})`;
+    numEls[p.id].textContent = v;
+    pctEls[p.id].textContent = "";
+  });
+  const total = Object.values(V).reduce((a,b)=>a+b,0);
+  document.getElementById("hdr-total").textContent = total;
+  document.querySelector("#total-strip strong").textContent = total + " / 125";
+}
+function render() { updateSliders(); drawBar(); drawSeats(); drawResult(); drawLegend(); }
+document.getElementById("reset-btn").addEventListener("click", () => { V = {...DEFAULTS}; render(); });
+buildPartyRows();
+render();
+</script>
+</body>
+</html>
