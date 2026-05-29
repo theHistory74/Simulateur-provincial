@@ -88,6 +88,26 @@ input[type=range]::-moz-range-thumb {
   background: #d9e3f2; border: 2px solid #07111f; cursor: pointer;
 }
 .pnum { font-size: 20px; font-weight: 900; line-height: 1; text-align: right; }
+.pnum-input {
+  width: 50px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  padding: 2px 3px;
+  color: inherit;
+  font: 900 20px/1 system-ui, sans-serif;
+  text-align: right;
+  cursor: pointer;
+}
+.pnum-input:hover { border-color: rgba(255,255,255,.18); background: rgba(255,255,255,.035); }
+.pnum-input:focus {
+  outline: none;
+  border-color: var(--qc-light);
+  background: rgba(10,27,50,.85);
+}
+.pnum-input::-webkit-outer-spin-button,
+.pnum-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.pnum-input[type=number] { -moz-appearance: textfield; appearance: textfield; }
 .ppct { display: none; }
 #left-footer { margin-top: 12px; display: flex; flex-direction: column; gap: 6px; }
 #total-strip {
@@ -212,7 +232,7 @@ input[type=range]::-moz-range-thumb {
         <div class="note">💡 <b>125 sièges</b> = 125 circonscriptions</div>
         <div class="note">💡 <b>63 sièges</b> = majorité absolue</div>
         <div class="note">💡 <b>1 circonscription</b> = 1 député élu</div>
-        <div class="note">💡 Le chef du parti gagnant devient généralement <b>premier ministre</b></div>
+        <div class="note">💡 Clique sur un <b>nombre</b> pour entrer les sièges directement</div>
       </div>
       <button id="reset-btn">↺ Réinitialiser — résultats du 3 octobre 2022</button>
     </div>
@@ -304,13 +324,27 @@ function buildPartyRows() {
       <div class="pdot" style="background:${p.color}"></div>
       <div><div class="pname" style="color:${p.color}">${p.label}</div><div class="pnote">${p.note}</div></div>
       <input type="range" id="sl-${p.id}" min="0" max="${p.max}" value="${V[p.id]}">
-      <div><div class="pnum" id="n-${p.id}" style="color:${p.color}">${V[p.id]}</div><div class="ppct" id="p-${p.id}"></div></div>`;
+      <div><input type="number" class="pnum-input" id="n-${p.id}" min="0" max="${p.max}" value="${V[p.id]}" style="color:${p.color}" aria-label="Nombre de sièges pour ${p.label}"><div class="ppct" id="p-${p.id}"></div></div>`;
     rowsDiv.appendChild(row);
     sliders[p.id] = document.getElementById("sl-"+p.id);
     numEls[p.id] = document.getElementById("n-"+p.id);
     pctEls[p.id] = document.getElementById("p-"+p.id);
     sliders[p.id].addEventListener("input", e => { redist(p.id, +e.target.value); });
+    numEls[p.id].addEventListener("focus", e => e.target.select());
+    numEls[p.id].addEventListener("change", () => applyManualInput(p.id));
+    numEls[p.id].addEventListener("keydown", e => {
+      if (e.key === "Enter") { e.preventDefault(); e.target.blur(); }
+      if (e.key === "Escape") { e.preventDefault(); e.target.value = V[p.id]; e.target.blur(); }
+    });
   });
+}
+function applyManualInput(id) {
+  const party = PARTIES.find(p => p.id === id);
+  let val = parseInt(numEls[id].value, 10);
+  if (Number.isNaN(val)) val = V[id];
+  val = Math.max(0, Math.min(party.max, val));
+  numEls[id].value = val;
+  redist(id, val);
 }
 function redist(changedId, newVal) {
   if (busy) return;
@@ -447,7 +481,7 @@ function updateSliders() {
     const v = V[p.id];
     const pct = (v/p.max*100).toFixed(1)+"%";
     sliders[p.id].style.background = `linear-gradient(to right,${p.color} ${pct},#1d2e4a ${pct})`;
-    numEls[p.id].textContent = v;
+    numEls[p.id].value = v;
     pctEls[p.id].textContent = "";
   });
   const total = Object.values(V).reduce((a,b)=>a+b,0);
