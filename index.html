@@ -145,9 +145,8 @@ input[type=range]::-moz-range-thumb {
 }
 #result-box.maj { background: #e8f5eb; border: 1.5px solid #61a871; }
 #result-box.min { background: #fff5da; border: 1.5px solid #c79a32; }
-#result-icon  { font-size: 18px; margin-bottom: 2px; }
 #result-title { font-size: 14px; font-weight: 800; margin-bottom: 3px; }
-#result-desc  { font-size: 11px; color: #4f6785; line-height: 1.55; }
+#result-desc { font-size: 11px; color: #4f6785; line-height: 1.55; }
 #result-desc b { color: var(--text); }
 #legend { display: flex; flex-wrap: wrap; gap: 4px 12px; flex-shrink: 0; }
 .li { display: flex; align-items: center; gap: 4px; font-size: 11px; }
@@ -305,17 +304,11 @@ input[type=range]::-moz-range-thumb {
         <text x="350" y="214" text-anchor="middle" fill="#8a9bb0" font-size="8" transform="rotate(-90,350,214)" letter-spacing="2">— ALLÉE CENTRALE —</text>
         <g id="seats-left"></g>
         <g id="seats-right"></g>
-        <rect x="309" y="178" width="82" height="56" rx="8" fill="#ffffff" stroke="#c8d5e4" stroke-width="1"/>
-        <text id="cpt-num" x="350" y="208" text-anchor="middle" font-size="28" font-weight="900">—</text>
-        <text id="cpt-name" x="350" y="224" text-anchor="middle" fill="#58708f" font-size="9"> </text>
-        <text id="lbl-gov" x="155" y="402" text-anchor="middle" font-size="12" font-weight="800"> </text>
-        <text x="544" y="402" text-anchor="middle" fill="#58708f" font-size="12" font-weight="800">OPPOSITION</text>
       </svg>
     </div>
     <div id="result-box" class="min">
-      <div id="result-icon">🏛️</div>
       <div id="result-title">—</div>
-      <div id="result-desc">Glisse un curseur pour voir le résultat.</div>
+      <div id="result-desc">Modifie les sièges pour voir quel parti forme le gouvernement.</div>
     </div>
     <div id="legend"></div>
   </div>
@@ -508,11 +501,6 @@ function drawSeats() {
       rightG.appendChild(rect); j++;
     }
   }
-  document.getElementById("cpt-num").textContent = V[top.id];
-  document.getElementById("cpt-num").setAttribute("fill", top.color);
-  document.getElementById("cpt-name").textContent = top.label;
-  document.getElementById("lbl-gov").textContent = top.label.toUpperCase()+" — "+V[top.id];
-  document.getElementById("lbl-gov").setAttribute("fill", top.color);
 }
 function drawBar() {
   const top = PARTIES.filter(p=>p.isParty!==false).reduce((a,b)=>V[a.id]>=V[b.id]?a:b);
@@ -535,7 +523,6 @@ function drawResult() {
   const isMaj = topN >= MAJ;
   const box = document.getElementById("result-box");
   box.className = isMaj ? "maj" : "min";
-  document.getElementById("result-icon").textContent = isMaj ? "🏆" : "⚠️";
   document.getElementById("result-title").textContent = "Gouvernement " + (isMaj ? "MAJORITAIRE" : "MINORITAIRE");
   document.getElementById("result-title").style.color = isMaj ? top.color : "#845f00";
   let desc = "";
