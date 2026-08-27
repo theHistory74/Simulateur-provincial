@@ -7,20 +7,20 @@
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 :root{
-  --bg:#08101d;
-  --panel:#0d1728;
-  --panel2:#07111f;
-  --line:#1d2e4a;
-  --text:#e7edf7;
-  --muted:#6c82a3;
-  --muted2:#3f5577;
+  --bg:#edf3f8;
+  --panel:#ffffff;
+  --panel2:#f5f8fc;
+  --line:#c8d5e4;
+  --text:#17243a;
+  --muted:#58708f;
+  --muted2:#8293aa;
   --qc-blue:#1456a0;
-  --qc-light:#5aa7ff;
-  --gold:#f0c85a;
+  --qc-light:#2b76c8;
+  --gold:#916600;
 }
 body {
   width: 100vw; height: 100vh; overflow: hidden;
-  background: radial-gradient(circle at 20% 0%, #0d2342 0%, #08101d 38%, #050913 100%);
+  background: radial-gradient(circle at 20% 0%, #ffffff 0%, #edf3f8 42%, #e5edf5 100%);
   color: var(--text);
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   display: flex; flex-direction: column;
@@ -29,7 +29,7 @@ body {
   flex-shrink: 0; height: 58px;
   display: flex; align-items: center; gap: 14px;
   padding: 0 24px;
-  background: linear-gradient(90deg, #0b1930, #0d1728 55%, #07111f);
+  background: linear-gradient(90deg, #ffffff, #f4f8fc 55%, #eaf1f8);
   border-bottom: 1px solid var(--line);
 }
 #qc-mark {
@@ -54,10 +54,10 @@ body {
   padding: 16px 22px 12px;
   display: flex; flex-direction: column;
   overflow: hidden;
-  background: linear-gradient(180deg, rgba(20,86,160,.08), rgba(0,0,0,0));
+  background: linear-gradient(180deg, rgba(20,86,160,.07), rgba(255,255,255,.72));
 }
 .section-lbl {
-  font-size: 10px; font-weight: 800; color: #85a9d8;
+  font-size: 10px; font-weight: 800; color: #315d92;
   letter-spacing: 1px; text-transform: uppercase;
   margin-bottom: 14px;
 }
@@ -70,7 +70,7 @@ body {
   grid-template-columns: 10px 1fr 90px 50px;
   align-items: center; gap: 10px;
 }
-.pdot { width: 10px; height: 10px; border-radius: 50%; box-shadow:0 0 0 2px rgba(255,255,255,.05); }
+.pdot { width: 10px; height: 10px; border-radius: 50%; box-shadow:0 0 0 2px rgba(23,36,58,.08); }
 .pname { font-size: 13px; font-weight: 800; line-height: 1.2; }
 .pnote { font-size: 10px; color: var(--muted); margin-top: 1px; }
 input[type=range] {
@@ -81,32 +81,46 @@ input[type=range] {
 input[type=range]::-webkit-slider-thumb {
   -webkit-appearance: none;
   width: 15px; height: 15px; border-radius: 50%;
-  background: #d9e3f2; border: 2px solid #07111f; cursor: pointer;
+  background: #ffffff; border: 2px solid #526b8c; cursor: pointer;
 }
 input[type=range]::-moz-range-thumb {
   width: 15px; height: 15px; border-radius: 50%;
-  background: #d9e3f2; border: 2px solid #07111f; cursor: pointer;
+  background: #ffffff; border: 2px solid #526b8c; cursor: pointer;
 }
-.pnum { font-size: 20px; font-weight: 900; line-height: 1; text-align: right; }
+.pnum {
+  width: 50px; padding: 2px 3px;
+  background: transparent; border: 1px solid transparent; border-radius: 5px;
+  font: 900 20px/1 system-ui, sans-serif; text-align: right;
+}
+.pnum:hover { border-color: var(--line); }
+.pnum:focus { outline: none; background: #ffffff; border-color: var(--qc-light); }
 .ppct { display: none; }
 #left-footer { margin-top: 12px; display: flex; flex-direction: column; gap: 6px; }
 #total-strip {
   display: flex; justify-content: space-between; align-items: center;
   padding: 7px 12px;
-  background: rgba(12,57,22,.6); border: 1px solid #1f6b32; border-radius: 8px;
+  background: #e8f5eb; border: 1px solid #78b986; border-radius: 8px;
 }
-#total-strip span { font-size: 11px; color: #5be182; font-weight: 700; }
-#total-strip strong { font-size: 13px; color: #5be182; }
+#total-strip span { font-size: 11px; color: #246b35; font-weight: 700; }
+#total-strip strong { font-size: 13px; color: #246b35; }
 #notes { display: grid; grid-template-columns: 1fr 1fr; gap: 2px 8px; }
 .note { font-size: 10px; color: var(--muted); line-height: 1.5; }
-.note b { color: #a9c7ed; }
-#reset-btn {
+.note b { color: #315d92; }
+#reset-btn, #exact-btn {
   padding: 6px 0; background: transparent;
   border: 1px solid var(--line); border-radius: 8px;
   color: var(--muted); font-size: 11px; cursor: pointer;
   font-family: system-ui, sans-serif;
 }
-#reset-btn:hover { border-color: var(--qc-light); color: var(--text); }
+#reset-btn:hover, #exact-btn:hover { border-color: var(--qc-light); color: var(--text); }
+#exact-btn {
+  margin-top: -6px; margin-bottom: 12px; flex-shrink: 0;
+  background: rgba(20,86,160,.1);
+  border-color: #5c91ca;
+  color: #174f8c;
+  font-weight: 800;
+}
+#exact-btn:hover { background: rgba(20,86,160,.18); }
 #right {
   padding: 14px 16px 10px;
   display: flex; flex-direction: column; gap: 7px;
@@ -115,7 +129,7 @@ input[type=range]::-moz-range-thumb {
 #share-bar {
   display: flex; height: 18px; border-radius: 5px;
   overflow: hidden; gap: 2px; flex-shrink: 0;
-  background:#07111f;
+  background:#dce5ef;
 }
 .seg {
   display: flex; align-items: center; justify-content: center;
@@ -129,36 +143,36 @@ input[type=range]::-moz-range-thumb {
   padding: 9px 14px; border-radius: 10px;
   text-align: center; flex-shrink: 0;
 }
-#result-box.maj { background: rgba(6,31,12,.78); border: 1.5px solid #24793a; }
-#result-box.min { background: rgba(31,24,8,.78); border: 1.5px solid #7a5818; }
+#result-box.maj { background: #e8f5eb; border: 1.5px solid #61a871; }
+#result-box.min { background: #fff5da; border: 1.5px solid #c79a32; }
 #result-icon  { font-size: 18px; margin-bottom: 2px; }
 #result-title { font-size: 14px; font-weight: 800; margin-bottom: 3px; }
-#result-desc  { font-size: 11px; color: #88a1c5; line-height: 1.55; }
+#result-desc  { font-size: 11px; color: #4f6785; line-height: 1.55; }
 #result-desc b { color: var(--text); }
 #legend { display: flex; flex-wrap: wrap; gap: 4px 12px; flex-shrink: 0; }
 .li { display: flex; align-items: center; gap: 4px; font-size: 11px; }
 .ldot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
 #start-screen {
   position: fixed; inset: 0; z-index: 999;
-  background: rgba(4, 9, 18, .96);
+  background: rgba(226, 234, 243, .96);
   display: flex; align-items: center; justify-content: center;
   padding: 24px;
 }
 #start-card {
   width: min(580px, 100%);
-  background: linear-gradient(180deg, #0f1d34, #0b1424);
+  background: linear-gradient(180deg, #ffffff, #f5f8fc);
   border: 1px solid var(--line);
   border-radius: 16px;
   padding: 24px;
-  box-shadow: 0 18px 60px rgba(0,0,0,.45);
+  box-shadow: 0 18px 60px rgba(38,63,92,.22);
 }
 #start-card h2 { font-size: 20px; margin-bottom: 8px; color: var(--text); }
-#start-card p { font-size: 13px; line-height: 1.5; color: #8ca7cc; margin-bottom: 18px; }
+#start-card p { font-size: 13px; line-height: 1.5; color: #526a88; margin-bottom: 18px; }
 #party-name-form { display: grid; gap: 10px; }
 .name-row { display: grid; grid-template-columns: 12px 1fr; gap: 10px; align-items: center; }
 .name-row .dot { width: 12px; height: 12px; border-radius: 50%; }
 .name-row input {
-  width: 100%; background: #07111f; border: 1px solid var(--line); border-radius: 8px;
+  width: 100%; background: #ffffff; border: 1px solid var(--line); border-radius: 8px;
   color: var(--text); padding: 10px 12px; font: 13px system-ui, sans-serif;
 }
 .name-row input:focus { outline: none; border-color: var(--qc-light); }
@@ -167,8 +181,50 @@ input[type=range]::-moz-range-thumb {
   flex: 1; padding: 10px 12px; border-radius: 8px; font: 800 12px system-ui, sans-serif; cursor: pointer;
 }
 #start-btn { background: #1456a0; color: white; border: 1px solid #2b76c8; }
-#default-names-btn { background: transparent; color: #8ca7cc; border: 1px solid var(--line); }
+#default-names-btn { background: transparent; color: #526a88; border: 1px solid var(--line); }
 #default-names-btn:hover { color: var(--text); }
+#exact-screen {
+  position: fixed; inset: 0; z-index: 1000;
+  background: rgba(226, 234, 243, .94);
+  display: none; align-items: center; justify-content: center;
+  padding: 24px;
+}
+#exact-screen.open { display: flex; }
+#exact-card {
+  width: min(520px, 100%);
+  background: linear-gradient(180deg, #ffffff, #f5f8fc);
+  border: 1px solid var(--line); border-radius: 16px;
+  padding: 24px; box-shadow: 0 18px 60px rgba(38,63,92,.22);
+}
+#exact-card h2 { font-size: 20px; margin-bottom: 6px; }
+#exact-card > p { font-size: 12px; line-height: 1.5; color: #526a88; margin-bottom: 14px; }
+#exact-form { display: grid; gap: 7px; }
+.exact-row {
+  display: grid; grid-template-columns: 12px 1fr 82px;
+  gap: 10px; align-items: center;
+}
+.exact-row .dot { width: 12px; height: 12px; border-radius: 50%; }
+.exact-row label { font-size: 12px; font-weight: 700; }
+.exact-row input {
+  width: 82px; background: #ffffff; border: 1px solid var(--line); border-radius: 7px;
+  color: var(--text); padding: 7px 9px; font: 800 14px system-ui, sans-serif; text-align: right;
+}
+.exact-row input:focus { outline: none; border-color: var(--qc-light); }
+#exact-status {
+  margin-top: 14px; padding: 8px 10px; border-radius: 8px;
+  background: #f5f8fc; border: 1px solid var(--line);
+  font-size: 12px; text-align: center; color: #526a88;
+}
+#exact-status.ok { color: #246b35; border-color: #61a871; }
+#exact-status.bad { color: #845f00; border-color: #c79a32; }
+#exact-actions { display: flex; gap: 10px; margin-top: 14px; }
+#exact-cancel, #exact-apply {
+  flex: 1; padding: 9px 12px; border-radius: 8px;
+  font: 800 12px system-ui, sans-serif; cursor: pointer;
+}
+#exact-cancel { background: transparent; color: #526a88; border: 1px solid var(--line); }
+#exact-apply { background: #1456a0; color: white; border: 1px solid #2b76c8; }
+#exact-apply:disabled { opacity: .4; cursor: not-allowed; }
 @media (max-width: 900px){
   body{height:auto; min-height:100vh; overflow:auto;}
   #body{grid-template-columns:1fr;}
@@ -183,7 +239,7 @@ input[type=range]::-moz-range-thumb {
 <div id="start-screen">
   <div id="start-card">
     <h2>Nommer les partis</h2>
-    <p>Le simulateur s’ouvre avec les vrais noms des partis représentés ou présents dans l’élection québécoise de 2022. Tu peux les conserver ou les remplacer par des noms fictifs.</p>
+    <p>Le simulateur s’ouvre avec les noms des principales formations politiques du Québec. Tu peux les conserver ou les remplacer par des noms fictifs.</p>
     <div id="party-name-form"></div>
     <div id="start-actions">
       <button id="default-names-btn" type="button">Réinitialiser les noms</button>
@@ -191,20 +247,33 @@ input[type=range]::-moz-range-thumb {
     </div>
   </div>
 </div>
+<div id="exact-screen" role="dialog" aria-modal="true" aria-labelledby="exact-title">
+  <div id="exact-card">
+    <h2 id="exact-title">Saisie précise des résultats</h2>
+    <p>Entre le nombre exact de sièges pour chaque parti. Le total doit être égal à 127.</p>
+    <div id="exact-form"></div>
+    <div id="exact-status"></div>
+    <div id="exact-actions">
+      <button id="exact-cancel" type="button">Annuler</button>
+      <button id="exact-apply" type="button">Appliquer les résultats</button>
+    </div>
+  </div>
+</div>
 <div id="hdr">
   <div id="qc-mark">⚜</div>
   <div>
     <h1>Assemblée nationale du Québec — Simulateur</h1>
-    <p>Glisse un curseur → les autres s'ajustent proportionnellement &nbsp;·&nbsp; Résultats de 2022 adaptés à la carte de 2026 &nbsp;·&nbsp; 127 sièges</p>
+    <p>Glisse un curseur → les autres s'ajustent proportionnellement &nbsp;·&nbsp; Simulation de la prochaine élection &nbsp;·&nbsp; 127 sièges</p>
   </div>
   <div id="hdr-badges">
     <div class="bdg"><div class="bdg-n" id="hdr-total">127</div><div class="bdg-l">sièges / 127</div></div>
-    <div class="bdg"><div class="bdg-n" style="color:#f0c85a">64</div><div class="bdg-l">= majorité</div></div>
+    <div class="bdg"><div class="bdg-n" style="color:#845f00">64</div><div class="bdg-l">= majorité</div></div>
   </div>
 </div>
 <div id="body">
   <div id="left">
     <div class="section-lbl">🎛️ Attribution des sièges</div>
+    <button id="exact-btn">⌨ Saisie précise des résultats</button>
     <div id="parti-rows"></div>
     <div id="left-footer">
       <div id="total-strip"><span>✅ Total = 127 sièges</span><strong>127 / 127</strong></div>
@@ -214,7 +283,7 @@ input[type=range]::-moz-range-thumb {
         <div class="note">💡 <b>1 circonscription</b> = 1 député élu</div>
         <div class="note">💡 Le chef du parti gagnant devient généralement <b>premier ministre</b></div>
       </div>
-      <button id="reset-btn">↺ Réinitialiser — résultats du 3 octobre 2022</button>
+      <button id="reset-btn">↺ Réinitialiser — point de départ</button>
       <div style="font-size:9px;color:var(--muted);text-align:center;opacity:.7">Conception : Éric Carle</div>
     </div>
   </div>
@@ -225,24 +294,22 @@ input[type=range]::-moz-range-thumb {
       <svg id="chambre-svg" viewBox="0 0 700 410" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <linearGradient id="room" x1="0" x2="0" y1="0" y2="1">
-            <stop offset="0%" stop-color="#0a1b32"/>
-            <stop offset="100%" stop-color="#06101d"/>
+            <stop offset="0%" stop-color="#f8fbfe"/>
+            <stop offset="100%" stop-color="#e7eef6"/>
           </linearGradient>
         </defs>
-        <rect x="0" y="0" width="700" height="410" rx="12" fill="url(#room)" stroke="#1d2e4a" stroke-width="1.5"/>
-        <rect x="262" y="4" width="176" height="28" rx="7" fill="#0f2d50" stroke="#2b76c8" stroke-width="1"/>
-        <text x="350" y="22" text-anchor="middle" fill="#9fc9ff" font-size="10" font-weight="800">⚜  PRÉSIDENTE OU PRÉSIDENT</text>
-        <rect x="328" y="34" width="44" height="356" rx="4" fill="#040b14"/>
-        <text x="350" y="214" text-anchor="middle" fill="#10213a" font-size="8" transform="rotate(-90,350,214)" letter-spacing="2">— ALLÉE CENTRALE —</text>
-        <path d="M70,60 C130,35 240,40 318,52" fill="none" stroke="#14365e" stroke-width="1" opacity=".8"/>
-        <path d="M630,60 C570,35 460,40 382,52" fill="none" stroke="#14365e" stroke-width="1" opacity=".8"/>
+        <rect x="0" y="0" width="700" height="410" rx="12" fill="url(#room)" stroke="#c8d5e4" stroke-width="1.5"/>
+        <rect x="262" y="4" width="176" height="28" rx="7" fill="#dcecfb" stroke="#2b76c8" stroke-width="1"/>
+        <text x="350" y="22" text-anchor="middle" fill="#205b98" font-size="10" font-weight="800">⚜  PRÉSIDENTE OU PRÉSIDENT</text>
+        <rect x="328" y="34" width="44" height="356" rx="4" fill="#d9e2ec"/>
+        <text x="350" y="214" text-anchor="middle" fill="#8a9bb0" font-size="8" transform="rotate(-90,350,214)" letter-spacing="2">— ALLÉE CENTRALE —</text>
         <g id="seats-left"></g>
         <g id="seats-right"></g>
-        <rect x="309" y="178" width="82" height="56" rx="8" fill="#081524" stroke="#1d2e4a" stroke-width="1"/>
+        <rect x="309" y="178" width="82" height="56" rx="8" fill="#ffffff" stroke="#c8d5e4" stroke-width="1"/>
         <text id="cpt-num" x="350" y="208" text-anchor="middle" font-size="28" font-weight="900">—</text>
-        <text id="cpt-name" x="350" y="224" text-anchor="middle" fill="#5c7397" font-size="9"> </text>
+        <text id="cpt-name" x="350" y="224" text-anchor="middle" fill="#58708f" font-size="9"> </text>
         <text id="lbl-gov" x="155" y="402" text-anchor="middle" font-size="12" font-weight="800"> </text>
-        <text x="544" y="402" text-anchor="middle" fill="#5c7397" font-size="12" font-weight="800">OPPOSITION</text>
+        <text x="544" y="402" text-anchor="middle" fill="#58708f" font-size="12" font-weight="800">OPPOSITION</text>
       </svg>
     </div>
     <div id="result-box" class="min">
@@ -256,13 +323,13 @@ input[type=range]::-moz-range-thumb {
 <script>
 const TOTAL = 127, MAJ = 64;
 const PARTIES = [
-  { id:"caq", color:"#2f6bb2", label:"Coalition avenir Québec", note:"Gouvernement en 2022", max:127 },
-  { id:"plq", color:"#d83030", label:"Parti libéral du Québec", note:"Opposition officielle en 2022", max:127 },
-  { id:"qs", color:"#f08424", label:"Québec solidaire", note:"Groupe parlementaire", max:127 },
-  { id:"pq", color:"#1d9bd1", label:"Parti québécois", note:"Groupe parlementaire", max:127 },
-  { id:"pcq", color:"#243f88", label:"Parti conservateur du Québec", note:"0 siège en 2022", max:127 },
-  { id:"ind", color:"#8a8f98", label:"Indépendants", note:"Sans affiliation", max:127 },
-  { id:"non", color:"#46556c", label:"Sièges vacants", note:"2 sièges au départ", max:127, isParty:false }
+  { id:"caq", color:"#245f9f", label:"Coalition avenir Québec", note:"Parti politique", max:127 },
+  { id:"plq", color:"#c62828", label:"Parti libéral du Québec", note:"Parti politique", max:127 },
+  { id:"qs", color:"#b84e00", label:"Québec solidaire", note:"Parti politique", max:127 },
+  { id:"pq", color:"#00769e", label:"Parti québécois", note:"Parti politique", max:127 },
+  { id:"pcq", color:"#465bc0", label:"Parti conservateur du Québec", note:"Parti politique", max:127 },
+  { id:"ind", color:"#5f6875", label:"Indépendants", note:"Sans affiliation", max:127 },
+  { id:"non", color:"#657386", label:"Sièges vacants", note:"2 sièges au départ", max:127, isParty:false }
 ];
 const DEFAULTS = { caq:90, plq:21, qs:11, pq:3, pcq:0, ind:0, non:2 };
 let V = {...DEFAULTS};
@@ -306,12 +373,17 @@ function buildPartyRows() {
       <div class="pdot" style="background:${p.color}"></div>
       <div><div class="pname" style="color:${p.color}">${p.label}</div><div class="pnote">${p.note}</div></div>
       <input type="range" id="sl-${p.id}" min="0" max="${p.max}" value="${V[p.id]}">
-      <div><div class="pnum" id="n-${p.id}" style="color:${p.color}">${V[p.id]}</div><div class="ppct" id="p-${p.id}"></div></div>`;
+      <div><input class="pnum" type="number" id="n-${p.id}" min="0" max="${p.max}" value="${V[p.id]}" style="color:${p.color}" aria-label="Nombre de sièges pour ${p.label}"><div class="ppct" id="p-${p.id}"></div></div>`;
     rowsDiv.appendChild(row);
     sliders[p.id] = document.getElementById("sl-"+p.id);
     numEls[p.id] = document.getElementById("n-"+p.id);
     pctEls[p.id] = document.getElementById("p-"+p.id);
     sliders[p.id].addEventListener("input", e => { redist(p.id, +e.target.value); });
+    numEls[p.id].addEventListener("change", e => {
+      const value = Math.max(0, Math.min(p.max, Math.round(Number(e.target.value) || 0)));
+      e.target.value = value;
+      redist(p.id, value);
+    });
   });
 }
 function redist(changedId, newVal) {
@@ -349,7 +421,56 @@ function redist(changedId, newVal) {
   busy = false;
   render();
 }
-const DOT=7, STEP=10, Y0=48, Y1=372;
+const exactScreen = document.getElementById("exact-screen");
+const exactForm = document.getElementById("exact-form");
+const exactStatus = document.getElementById("exact-status");
+const exactApply = document.getElementById("exact-apply");
+function updateExactStatus() {
+  const inputs = [...exactForm.querySelectorAll("input")];
+  const values = inputs.map(input => Number(input.value));
+  const invalid = values.some(value => !Number.isInteger(value) || value < 0 || value > TOTAL);
+  if (invalid) {
+    exactStatus.className = "bad";
+    exactStatus.textContent = "Utilise seulement des nombres entiers de 0 à 127.";
+    exactApply.disabled = true;
+    return;
+  }
+  const total = values.reduce((sum, value) => sum + value, 0);
+  const remaining = TOTAL - total;
+  exactStatus.className = remaining === 0 ? "ok" : "bad";
+  exactStatus.textContent = remaining === 0
+    ? `Total : ${total} / ${TOTAL} — prêt à appliquer`
+    : remaining > 0
+      ? `Total : ${total} / ${TOTAL} — ${remaining} siège${remaining > 1 ? "s" : ""} à attribuer`
+      : `Total : ${total} / ${TOTAL} — retire ${Math.abs(remaining)} siège${Math.abs(remaining) > 1 ? "s" : ""}`;
+  exactApply.disabled = remaining !== 0;
+}
+function openExactEntry() {
+  exactForm.innerHTML = "";
+  PARTIES.forEach(p => {
+    const row = document.createElement("div");
+    row.className = "exact-row";
+    row.innerHTML = `<div class="dot" style="background:${p.color}"></div><label for="exact-${p.id}" style="color:${p.color}">${p.label}</label><input id="exact-${p.id}" data-id="${p.id}" type="number" min="0" max="${TOTAL}" step="1" value="${V[p.id]}">`;
+    exactForm.appendChild(row);
+  });
+  exactForm.querySelectorAll("input").forEach(input => input.addEventListener("input", updateExactStatus));
+  updateExactStatus();
+  exactScreen.classList.add("open");
+  exactForm.querySelector("input").focus();
+}
+function closeExactEntry() { exactScreen.classList.remove("open"); }
+document.getElementById("exact-btn").addEventListener("click", openExactEntry);
+document.getElementById("exact-cancel").addEventListener("click", closeExactEntry);
+exactApply.addEventListener("click", () => {
+  exactForm.querySelectorAll("input").forEach(input => {
+    V[input.dataset.id] = Math.max(0, Math.min(TOTAL, Math.round(Number(input.value) || 0)));
+  });
+  closeExactEntry();
+  PARTIES.forEach(p => sliders[p.id].value = V[p.id]);
+  render();
+});
+document.addEventListener("keydown", e => { if (e.key === "Escape" && exactScreen.classList.contains("open")) closeExactEntry(); });
+const DOT=8.5, STEP=10, Y0=48, Y1=372;
 const ROWS = Math.floor((Y1-Y0)/STEP);
 const COLS = Math.floor(300/STEP);
 const SVG_NS = "http://www.w3.org/2000/svg";
@@ -416,7 +537,7 @@ function drawResult() {
   box.className = isMaj ? "maj" : "min";
   document.getElementById("result-icon").textContent = isMaj ? "🏆" : "⚠️";
   document.getElementById("result-title").textContent = "Gouvernement " + (isMaj ? "MAJORITAIRE" : "MINORITAIRE");
-  document.getElementById("result-title").style.color = isMaj ? top.color : "#d5a530";
+  document.getElementById("result-title").style.color = isMaj ? top.color : "#845f00";
   let desc = "";
   if (isMaj) {
     desc = `<b style="color:${top.color}">${top.label}</b> obtient <b>${topN} sièges</b>. Il peut gouverner <b>seul</b> et faire adopter ses lois plus facilement. Le chef de ce parti devient généralement <b>premier ministre du Québec</b>.`;
@@ -440,7 +561,7 @@ function drawLegend() {
   [top,...others].filter(p=>V[p.id]>0).forEach(p => {
     const it = document.createElement("div");
     it.className = "li";
-    it.innerHTML = `<div class="ldot" style="background:${p.color}"></div><span style="color:${p.color};font-weight:700">${p.label}</span><span style="color:#6c82a3">${V[p.id]} sièges</span>`;
+    it.innerHTML = `<div class="ldot" style="background:${p.color}"></div><span style="color:${p.color};font-weight:700">${p.label}</span><span style="color:#58708f">${V[p.id]} sièges</span>`;
     leg.appendChild(it);
   });
 }
@@ -448,8 +569,8 @@ function updateSliders() {
   PARTIES.forEach(p => {
     const v = V[p.id];
     const pct = (v/p.max*100).toFixed(1)+"%";
-    sliders[p.id].style.background = `linear-gradient(to right,${p.color} ${pct},#1d2e4a ${pct})`;
-    numEls[p.id].textContent = v;
+    sliders[p.id].style.background = `linear-gradient(to right,${p.color} ${pct},#d8e1eb ${pct})`;
+    numEls[p.id].value = v;
     pctEls[p.id].textContent = "";
   });
   const total = Object.values(V).reduce((a,b)=>a+b,0);
