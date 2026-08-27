@@ -195,11 +195,11 @@ input[type=range]::-moz-range-thumb {
   <div id="qc-mark">⚜</div>
   <div>
     <h1>Assemblée nationale du Québec — Simulateur</h1>
-    <p>Glisse un curseur → les autres s'ajustent proportionnellement &nbsp;·&nbsp; Élection du 3 octobre 2022 &nbsp;·&nbsp; 125 sièges</p>
+    <p>Glisse un curseur → les autres s'ajustent proportionnellement &nbsp;·&nbsp; Résultats de 2022 adaptés à la carte de 2026 &nbsp;·&nbsp; 127 sièges</p>
   </div>
   <div id="hdr-badges">
-    <div class="bdg"><div class="bdg-n" id="hdr-total">125</div><div class="bdg-l">sièges / 125</div></div>
-    <div class="bdg"><div class="bdg-n" style="color:#f0c85a">63</div><div class="bdg-l">= majorité</div></div>
+    <div class="bdg"><div class="bdg-n" id="hdr-total">127</div><div class="bdg-l">sièges / 127</div></div>
+    <div class="bdg"><div class="bdg-n" style="color:#f0c85a">64</div><div class="bdg-l">= majorité</div></div>
   </div>
 </div>
 <div id="body">
@@ -207,10 +207,10 @@ input[type=range]::-moz-range-thumb {
     <div class="section-lbl">🎛️ Attribution des sièges</div>
     <div id="parti-rows"></div>
     <div id="left-footer">
-      <div id="total-strip"><span>✅ Total = 125 sièges</span><strong>125 / 125</strong></div>
+      <div id="total-strip"><span>✅ Total = 127 sièges</span><strong>127 / 127</strong></div>
       <div id="notes">
-        <div class="note">💡 <b>125 sièges</b> = 125 circonscriptions</div>
-        <div class="note">💡 <b>63 sièges</b> = majorité absolue</div>
+        <div class="note">💡 <b>127 sièges</b> = 127 circonscriptions</div>
+        <div class="note">💡 <b>64 sièges</b> = majorité absolue</div>
         <div class="note">💡 <b>1 circonscription</b> = 1 député élu</div>
         <div class="note">💡 Le chef du parti gagnant devient généralement <b>premier ministre</b></div>
       </div>
@@ -254,23 +254,24 @@ input[type=range]::-moz-range-thumb {
   </div>
 </div>
 <script>
-const TOTAL = 125, MAJ = 63;
+const TOTAL = 127, MAJ = 64;
 const PARTIES = [
-  { id:"caq", color:"#2f6bb2", label:"Coalition avenir Québec", note:"Gouvernement en 2022", max:125 },
-  { id:"plq", color:"#d83030", label:"Parti libéral du Québec", note:"Opposition officielle en 2022", max:125 },
-  { id:"qs", color:"#f08424", label:"Québec solidaire", note:"Groupe parlementaire", max:125 },
-  { id:"pq", color:"#1d9bd1", label:"Parti québécois", note:"Groupe parlementaire", max:125 },
-  { id:"pcq", color:"#243f88", label:"Parti conservateur du Québec", note:"0 siège en 2022", max:125 },
-  { id:"ind", color:"#8a8f98", label:"Indépendants", note:"Sans affiliation", max:125 }
+  { id:"caq", color:"#2f6bb2", label:"Coalition avenir Québec", note:"Gouvernement en 2022", max:127 },
+  { id:"plq", color:"#d83030", label:"Parti libéral du Québec", note:"Opposition officielle en 2022", max:127 },
+  { id:"qs", color:"#f08424", label:"Québec solidaire", note:"Groupe parlementaire", max:127 },
+  { id:"pq", color:"#1d9bd1", label:"Parti québécois", note:"Groupe parlementaire", max:127 },
+  { id:"pcq", color:"#243f88", label:"Parti conservateur du Québec", note:"0 siège en 2022", max:127 },
+  { id:"ind", color:"#8a8f98", label:"Indépendants", note:"Sans affiliation", max:127 },
+  { id:"non", color:"#46556c", label:"Sièges vacants", note:"2 sièges au départ", max:127, isParty:false }
 ];
-const DEFAULTS = { caq:90, plq:21, qs:11, pq:3, pcq:0, ind:0 };
+const DEFAULTS = { caq:90, plq:21, qs:11, pq:3, pcq:0, ind:0, non:2 };
 let V = {...DEFAULTS};
 let busy = false;
 const DEFAULT_LABELS = Object.fromEntries(PARTIES.map(p => [p.id, p.label]));
 const nameForm = document.getElementById("party-name-form");
 function buildNameForm() {
   nameForm.innerHTML = "";
-  PARTIES.forEach(p => {
+  PARTIES.filter(p => p.isParty !== false).forEach(p => {
     const row = document.createElement("div");
     row.className = "name-row";
     row.innerHTML = `<div class="dot" style="background:${p.color}"></div><input id="name-${p.id}" value="${p.label}" aria-label="Nom du parti ${p.label}">`;
@@ -278,7 +279,7 @@ function buildNameForm() {
   });
 }
 function applyPartyNames() {
-  PARTIES.forEach(p => {
+  PARTIES.filter(p => p.isParty !== false).forEach(p => {
     const input = document.getElementById("name-" + p.id);
     const val = input.value.trim();
     p.label = val || DEFAULT_LABELS[p.id];
@@ -286,7 +287,7 @@ function applyPartyNames() {
 }
 buildNameForm();
 document.getElementById("default-names-btn").addEventListener("click", () => {
-  PARTIES.forEach(p => { document.getElementById("name-" + p.id).value = DEFAULT_LABELS[p.id]; });
+  PARTIES.filter(p => p.isParty !== false).forEach(p => { document.getElementById("name-" + p.id).value = DEFAULT_LABELS[p.id]; });
 });
 document.getElementById("start-btn").addEventListener("click", () => {
   applyPartyNames();
@@ -353,7 +354,7 @@ const ROWS = Math.floor((Y1-Y0)/STEP);
 const COLS = Math.floor(300/STEP);
 const SVG_NS = "http://www.w3.org/2000/svg";
 function drawSeats() {
-  const top = PARTIES.reduce((a,b)=>V[a.id]>=V[b.id]?a:b);
+  const top = PARTIES.filter(p=>p.isParty!==false).reduce((a,b)=>V[a.id]>=V[b.id]?a:b);
   const others = PARTIES.filter(p=>p.id!==top.id).sort((a,b)=>V[b.id]-V[a.id]);
   const leftG = document.getElementById("seats-left");
   leftG.innerHTML = "";
@@ -393,7 +394,7 @@ function drawSeats() {
   document.getElementById("lbl-gov").setAttribute("fill", top.color);
 }
 function drawBar() {
-  const top = PARTIES.reduce((a,b)=>V[a.id]>=V[b.id]?a:b);
+  const top = PARTIES.filter(p=>p.isParty!==false).reduce((a,b)=>V[a.id]>=V[b.id]?a:b);
   const others = PARTIES.filter(p=>p.id!==top.id).sort((a,b)=>V[b.id]-V[a.id]);
   const bar = document.getElementById("share-bar");
   bar.innerHTML = "";
@@ -408,7 +409,7 @@ function drawBar() {
   });
 }
 function drawResult() {
-  const top = PARTIES.reduce((a,b)=>V[a.id]>=V[b.id]?a:b);
+  const top = PARTIES.filter(p=>p.isParty!==false).reduce((a,b)=>V[a.id]>=V[b.id]?a:b);
   const topN = V[top.id];
   const isMaj = topN >= MAJ;
   const box = document.getElementById("result-box");
@@ -420,7 +421,7 @@ function drawResult() {
   if (isMaj) {
     desc = `<b style="color:${top.color}">${top.label}</b> obtient <b>${topN} sièges</b>. Il peut gouverner <b>seul</b> et faire adopter ses lois plus facilement. Le chef de ce parti devient généralement <b>premier ministre du Québec</b>.`;
   } else {
-    const others = PARTIES.filter(p=>p.id!==top.id&&V[p.id]>0).sort((a,b)=>V[b.id]-V[a.id]);
+    const others = PARTIES.filter(p=>p.isParty!==false&&p.id!==top.id&&V[p.id]>0).sort((a,b)=>V[b.id]-V[a.id]);
     let cumul=topN, alliesTxt="";
     for(const o of others){
       if(cumul>=MAJ) break;
@@ -432,7 +433,7 @@ function drawResult() {
   document.getElementById("result-desc").innerHTML = desc;
 }
 function drawLegend() {
-  const top = PARTIES.reduce((a,b)=>V[a.id]>=V[b.id]?a:b);
+  const top = PARTIES.filter(p=>p.isParty!==false).reduce((a,b)=>V[a.id]>=V[b.id]?a:b);
   const others = PARTIES.filter(p=>p.id!==top.id).sort((a,b)=>V[b.id]-V[a.id]);
   const leg = document.getElementById("legend");
   leg.innerHTML = "";
@@ -453,7 +454,7 @@ function updateSliders() {
   });
   const total = Object.values(V).reduce((a,b)=>a+b,0);
   document.getElementById("hdr-total").textContent = total;
-  document.querySelector("#total-strip strong").textContent = total + " / 125";
+  document.querySelector("#total-strip strong").textContent = total + " / 127";
 }
 function render() { updateSliders(); drawBar(); drawSeats(); drawResult(); drawLegend(); }
 document.getElementById("reset-btn").addEventListener("click", () => { V = {...DEFAULTS}; render(); });
